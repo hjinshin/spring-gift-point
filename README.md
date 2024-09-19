@@ -1,5 +1,7 @@
 # spring-gift-point
 
+* http://katecam-ppochaco.s3-website.ap-northeast-2.amazonaws.com/
+* 우측 상단에서 신형진을 선택해 주세요.
 
 ---
 ## 프로그램 요구 사항
