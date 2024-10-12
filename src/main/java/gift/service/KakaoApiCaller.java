@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.common.exception.AuthenticationException;
 import gift.common.properties.KakaoProperties;
-import gift.service.dto.KakaoInfoDto;
-import gift.service.dto.KakaoRequest;
-import gift.service.dto.KakaoTokenDto;
-import gift.service.dto.OrderDto;
+import gift.service.dto.*;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -67,7 +64,7 @@ public class KakaoApiCaller {
         }
     }
 
-    public KakaoTokenDto refreshAccessToken(String refreshToken) {
+    public KakaoRefreshedTokenDto refreshAccessToken(String refreshToken) {
         try {
             return client.post()
                     .uri(URI.create(properties.refreshUrl()))
@@ -75,7 +72,7 @@ public class KakaoApiCaller {
                     .body(createBodyForRefreshAccessToken(refreshToken))
                     .exchange((request, response) -> {
                         if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
-                            return objectMapper.readValue(response.getBody(), KakaoTokenDto.class);
+                            return objectMapper.readValue(response.getBody(), KakaoRefreshedTokenDto.class);
                         }
                         throw new AuthenticationException("토큰 갱신에 실패하였습니다.");
                     });
@@ -127,9 +124,9 @@ public class KakaoApiCaller {
 
     private @NotNull LinkedMultiValueMap<String, String> createBodyForRefreshAccessToken(String refreshToken) {
         var body = new LinkedMultiValueMap<String, String>();
-        body.add("grant_type", "refreshToken");
+        body.add("grant_type", "refresh_token");
         body.add("client_id", properties.clientId());
-        body.add("refreshToken", refreshToken);
+        body.add("refresh_token", refreshToken);
         return body;
     }
 

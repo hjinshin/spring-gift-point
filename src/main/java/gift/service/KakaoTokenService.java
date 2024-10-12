@@ -5,6 +5,7 @@ import gift.model.KakaoAccessToken;
 import gift.model.KakaoRefreshToken;
 import gift.repository.AccessTokenRepository;
 import gift.repository.RefreshTokenRepository;
+import gift.service.dto.KakaoRefreshedTokenDto;
 import gift.service.dto.KakaoTokenDto;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +41,10 @@ public class KakaoTokenService {
                         String refreshToken = refreshTokenRepository.findById(memberId)
                                 .orElseThrow(() -> new AuthenticationException("로그인이 만료되었습니다."))
                                 .getRefreshToken();
-                        KakaoTokenDto tokenDto = kakaoApiCaller.refreshAccessToken(refreshToken);
-                        return new KakaoAccessToken(memberId, tokenDto.accessToken(), tokenDto.expiresIn());
+                        KakaoRefreshedTokenDto tokenDto = kakaoApiCaller.refreshAccessToken(refreshToken);
+                        KakaoAccessToken newAccessToken = new KakaoAccessToken(memberId, tokenDto.accessToken(), tokenDto.expiresIn());
+                        accessTokenRepository.save(newAccessToken);
+                        return newAccessToken;
                     }).getAccessToken();
         }
 
